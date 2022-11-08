@@ -1,5 +1,5 @@
 <library path="lib/librtr_local_planner">
-	<class name ="rtr_local_planner/rtrPlannerROS" type ="rtr_local_planner::rtrPlannerROS" base_class_type= "nav_core::BaseLocalPlanner">
+	<class name ="rtr_local_planner/RTRLocalPlanner" type ="rtr_local_planner::RTRLocalPlanner" base_class_type= "nav_core::BaseLocalPlanner">
 		<description>
 			Rotate-Translate-Rotate Plugin for BaseLocalPlanner that allows you to follow the global path as it is.
 		</description>
