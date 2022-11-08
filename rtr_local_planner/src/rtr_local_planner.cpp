@@ -188,7 +188,7 @@ void RTRLocalPlanner::updateError() {
   goalError.x = (goalPos.x - currentPos.x);
   goalError.y = (goalPos.y - currentPos.y);
 
-  if (goalError.y == 0 & goalError.x == 0) {
+  if (goalError.y == 0 && goalError.x == 0) {
     yaw = currentPos.yaw;
   } else {
     yaw = std::atan2(goalError.y, goalError.x);
