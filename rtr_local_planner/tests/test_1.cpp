@@ -10,6 +10,7 @@ public:
   ~BasicTestSuite() {}
 };
 
+// test eucledian distance function with 0 values
 TEST_F(BasicTestSuite, distance_null) {
   RTRLocalPLannerHelpers rtr;
   pos target;
@@ -22,6 +23,8 @@ TEST_F(BasicTestSuite, distance_null) {
   double d = rtr.euclideanDistance(target, current);
   ASSERT_EQ(d, 0) << "Distance should be 0";
 }
+
+// test eucledian distance function with same values
 
 TEST_F(BasicTestSuite, distance_0) {
   RTRLocalPLannerHelpers rtr;
@@ -36,6 +39,8 @@ TEST_F(BasicTestSuite, distance_0) {
   ASSERT_EQ(d, 0) << "Distance should be 0";
 }
 
+// test eucledian distance function with different values
+
 TEST_F(BasicTestSuite, distance_1) {
   RTRLocalPLannerHelpers rtr;
   pos target;
@@ -49,12 +54,15 @@ TEST_F(BasicTestSuite, distance_1) {
   ASSERT_EQ(d, 1) << "Distance should be 1";
 }
 
+// test yaw minimizing distance function with default case
+
 TEST_F(BasicTestSuite, yaw_no_change) {
   RTRLocalPLannerHelpers rtr;
   double yaw = rtr.directionalYaw(RAD(25));
   ASSERT_EQ(yaw, RAD(25)) << "Yaw should be 25";
 }
 
+// test yaw minimizing distance function with CCW case
 TEST_F(BasicTestSuite, yaw_cw_change) {
   RTRLocalPLannerHelpers rtr;
   double yaw = rtr.directionalYaw(RAD(225));
@@ -62,6 +70,7 @@ TEST_F(BasicTestSuite, yaw_cw_change) {
   ASSERT_EQ(yaw, exp) << "Yaw should be -135 deg";
 }
 
+// test yaw minimizing distance function with CW case
 TEST_F(BasicTestSuite, yaw_ccw_change) {
   RTRLocalPLannerHelpers rtr;
   double yaw = rtr.directionalYaw(RAD(-225));
@@ -69,6 +78,7 @@ TEST_F(BasicTestSuite, yaw_ccw_change) {
   ASSERT_EQ(yaw, exp) << "Yaw should be +135 deg";
 }
 
+// test all components of error calculating function
 TEST_F(BasicTestSuite, pos_error_all) {
   RTRLocalPLannerHelpers rtr;
   pos target;
@@ -86,6 +96,7 @@ TEST_F(BasicTestSuite, pos_error_all) {
   ASSERT_TRUE(fabs(error.yaw - RAD(45)) < 0.0001) << "Yaw should be 45deg";
 }
 
+// test the singularity case of error calculating function
 TEST_F(BasicTestSuite, pos_error_yaw_singularity) {
   RTRLocalPLannerHelpers rtr;
   pos target;

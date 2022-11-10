@@ -138,7 +138,7 @@ add_library(rtr_local_planner_util
 add_executable(plan_monitor_node src/plan_monitor_node.cpp)
 
 target_link_libraries(plan_monitor_node
-   ${catkin_LIBRARIES}
+   ${catkin_LIBRARIES} rtr_local_planner_util
  )
 
 ## Add cmake target dependencies of the executable
@@ -147,7 +147,7 @@ target_link_libraries(plan_monitor_node
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(rtr_local_planner
-   ${catkin_LIBRARIES}
+   ${catkin_LIBRARIES} rtr_local_planner_util
  )
 
 #############

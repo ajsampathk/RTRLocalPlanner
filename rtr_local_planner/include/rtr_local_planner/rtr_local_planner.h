@@ -32,10 +32,10 @@
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
+// helper functions
 #include "rtr_local_planner/rtr_local_planner_util.h"
 
 // macros
-#define RAD(deg) 0.0174532925 * deg
 #define KP_LINEAR 0.75
 #define KP_ANGULAR 0.3
 #define INDEX_JUMP 5
@@ -67,11 +67,11 @@ private:
   costmap_2d::Costmap2DROS *costmap_ros_;
   tf2_ros::Buffer *tf_;
 
-  // Topics & Services
+  // topics & services
   ros::Subscriber amcl_sub;
   ros::Publisher path_pub;
 
-  // Position Data
+  // position data
   pos currentPos;
   pos goalPos;
   pos goalError;
@@ -92,6 +92,7 @@ private:
   bool goal_reached_;
   bool initialized_;
 
+  // functions
   void setVelocity(double linear, double angular);
 
   void amclCallback(const geometry_msgs::PoseWithCovarianceStamped::Ptr &msg);
