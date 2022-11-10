@@ -48,6 +48,28 @@ And replace it with:
 This should allow the RTRLocalPlanner to be initialized when move_base in launched.
 **Note:** You can also remove or comment any other params/lines that are related to DWA Planner.
 
+## Running 
+
+Once the launch file is modified, it is time to run the nodes. It is best to follow this order when launching the nodes:
+
+> `roslaunch turtlebot3_gazebo turtlebot3_world.launch #start gazebo simulation`
+
+
+> `roslaunch turtlebot3_navigation turtlebot3_navigation.launch #start navigation stack`
+
+
+> `rosrun rtr_local_planner plan_monitor_node #start rtr plan monitor`
+
+***NOTE:*** This is assuming you have a valid map, if you're not sure how to build and load a map, I recommend following [this tutorial](https://www.theconstructsim.com/ros-qa-191-how-to-load-a-pre-built-map-into-ros-for-the-navigation-stack/).
+
+Also note that `export TURTLEBOT3_MODEL=burger` should be executed before launching the first two launch files if running from two different terminals.
+
+## Tests
+
+Although it is not too complicated, there are some unit tests associated with the numerical calculations used in the RTR Planner. You can run all these tests by simply running the follwoing command from the workspace root directory:
+```
+catkin_make run_tests
+```
 
 
 
