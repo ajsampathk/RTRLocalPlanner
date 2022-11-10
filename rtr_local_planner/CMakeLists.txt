@@ -122,8 +122,11 @@ include_directories(
 ## Declare a C++ library
 add_library(rtr_local_planner
   src/rtr_local_planner.cpp
- )
+)
 
+add_library(rtr_local_planner_util
+  src/rtr_local_planner_util.cpp
+)
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -187,10 +190,16 @@ target_link_libraries(rtr_local_planner
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_rtr_local_planner.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test tests/test_1.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
+#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})
 # endif()
+
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  catkin_add_gtest(${PROJECT_NAME}-test tests/test_1.cpp)
+  target_link_libraries(rtr_local_planner-test ${catkin_LIBRARIES} rtr_local_planner_util)
+endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)

@@ -28,7 +28,11 @@
 
 // other
 #include <array>
+#include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
 #include <vector>
+
+#include "rtr_local_planner/rtr_local_planner_util.h"
 
 // macros
 #define RAD(deg) 0.0174532925 * deg
@@ -39,11 +43,6 @@
 #define YAW_THRESHOLD_DEG 10
 
 namespace rtr_local_planner {
-
-typedef struct pos {
-
-  double x, y, yaw, distance;
-}pos;
 
 class RTRLocalPlanner : public nav_core::BaseLocalPlanner {
 
@@ -64,13 +63,6 @@ public:
 
   bool isGoalReached();
 
-  double directionalYaw(double yaw);
-
-  double euclideanDistance(pos target, pos current);
-
-  pos getError(pos goalPos,pos currentPos);
-
-
 private:
   costmap_2d::Costmap2DROS *costmap_ros_;
   tf2_ros::Buffer *tf_;
@@ -87,6 +79,8 @@ private:
   // path plan data
   int planLength;
   int pathIndex;
+
+  RTRLocalPLannerHelpers rh;
 
   // msg variables
   std::vector<geometry_msgs::PoseStamped> plan;
@@ -105,8 +99,6 @@ private:
   void updateError();
 
   void updateGoal();
-
-
 };
 }; // namespace rtr_local_planner
 
