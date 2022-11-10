@@ -10,6 +10,7 @@
 #define D_YAW_THRESHOLD 0.1
 #define D_DIST_THREDSHOLD 0.1
 #define D_COUNT_THRESHOLD 10
+#define STUCK_THRESHOLD 10
 
 bool amcl_started = false;
 bool amclAvailable = false;
@@ -88,6 +89,7 @@ int main(int argc, char **argv) {
 
   int dYaw_count = 0;
   int dDist_count = 0;
+  int stuck_count = 0;
 
   while (ros::ok()) {
 
@@ -117,7 +119,12 @@ int main(int argc, char **argv) {
           publishMessage(&ss);
           dDist_count++;
         } else {
-          dDist_count = 0;
+          if (dDist == 0)
+            stuck_count++;
+          else {
+            stuck_count = 0;
+            dDist_count = 0;
+          }
         }
       }
       // if the velocities are continously away from the goal it is a critical
@@ -126,6 +133,12 @@ int main(int argc, char **argv) {
         std::stringstream ss;
         ss << "[CRITICAL]Robot seems to be deviating from the goal";
         publishMessage(&ss);
+      } else {
+        if (stuck_count > STUCK_THRESHOLD) {
+          std::stringstream ss;
+          ss << "[CRITICAL]Robot appears to be stuck";
+          publishMessage(&ss);
+        }
       }
     }
     ros::spinOnce();
