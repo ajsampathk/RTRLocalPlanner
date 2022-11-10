@@ -40,10 +40,10 @@
 
 namespace rtr_local_planner {
 
-struct pos {
+typedef struct pos {
 
   double x, y, yaw, distance;
-};
+}pos;
 
 class RTRLocalPlanner : public nav_core::BaseLocalPlanner {
 
@@ -63,6 +63,13 @@ public:
   bool computeVelocityCommands(geometry_msgs::Twist &cmd_vel);
 
   bool isGoalReached();
+
+  double directionalYaw(double yaw);
+
+  double euclideanDistance(pos target, pos current);
+
+  pos getError(pos goalPos,pos currentPos);
+
 
 private:
   costmap_2d::Costmap2DROS *costmap_ros_;
@@ -99,7 +106,7 @@ private:
 
   void updateGoal();
 
-  double directionalYaw(double yaw);
+
 };
 }; // namespace rtr_local_planner
 

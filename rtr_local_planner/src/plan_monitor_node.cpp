@@ -8,11 +8,16 @@
 #include <tf2/utils.h>
 #include <vector>
 
+#define D_YAW_THRESHOLD 0.1
+#define D_DIST_THREDSHOLD 0.1
+#define D_COUNT_THRESHOLD 20
+
 typedef struct pos {
   double x, y, yaw;
 } pos;
 
 bool amcl_started = false;
+bool amclAvailable = false;
 pos currentPos;
 pos prevPos;
 pos goal;
@@ -39,7 +44,7 @@ double getTargetDist(pos target, pos pose) {
 }
 
 bool getDerivatives() {
-  if (amcl_started && newGoalAvailable) {
+  if (amclAvailable && newGoalAvailable) {
     double prevYaw = getTargetYaw(goal, prevPos);
     double currentYaw = getTargetYaw(goal, currentPos);
     dYaw = currentYaw - prevYaw;
@@ -47,7 +52,7 @@ bool getDerivatives() {
     double prevDist = getTargetDist(goal, prevPos);
     double currentDist = getTargetDist(goal, currentPos);
     dDist = currentDist - prevDist;
-
+    amclAvailable = false;
     return true;
   }
   return false;
@@ -72,6 +77,7 @@ void amclCallback(const geometry_msgs::PoseWithCovarianceStamped::Ptr &msg) {
   currentPos.yaw = tf2::getYaw(msg->pose.pose.orientation);
 
   amcl_started = true;
+  amclAvailable = true;
 }
 
 int main(int argc, char **argv) {
@@ -87,35 +93,56 @@ int main(int argc, char **argv) {
 
   ros::Rate loop_rate(10);
 
+  int dYaw_count = 0;
+  int dDist_count = 0;
+
   while (ros::ok()) {
+    ROS_INFO("Waiting for goal");
+    while (!newGoalAvailable)
+      ;
 
     if (getDerivatives()) {
 
-      if (dYaw > 0) {
+      if (dYaw > D_YAW_THRESHOLD) {
         std_msgs::String msg;
 
         std::stringstream ss;
-        ss << "[WARN]Robot seems to be turning away from the goal-[deviation="
-           << dYaw << "]";
+        ss << "[WARN]Yaw deviation=" << dYaw;
         msg.data = ss.str();
         ROS_INFO("%s", msg.data.c_str());
         pub.publish(msg);
+        dYaw_count++;
+      } else {
+        dYaw_count = 0;
       }
 
-      if (dDist > 0) {
+      if (dDist > D_DIST_THREDSHOLD) {
         std_msgs::String msg;
 
         std::stringstream ss;
 
-        ss << "[WARN]Robot seems to be moving away from the goal-[deviation="
-           << dDist << "]";
+        ss << "[WARN]Dist deviation=" << dDist;
         msg.data = ss.str();
         ROS_INFO("%s", msg.data.c_str());
         pub.publish(msg);
+        dDist_count++;
+      } else {
+        dDist_count = 0;
       }
     }
 
-    ros::spinOnce();
+    if (dYaw_count > D_COUNT_THRESHOLD || dDist_count > D_COUNT_THRESHOLD) {
+      std_msgs::String msg;
+
+      std::stringstream ss;
+
+      ss << "[CRITICAL]Robot seems to be deviating from the goal";
+      msg.data = ss.str();
+      ROS_INFO("%s", msg.data.c_str());
+      pub.publish(msg);
+    }
+
+    ros ::spinOnce();
 
     loop_rate.sleep();
   }

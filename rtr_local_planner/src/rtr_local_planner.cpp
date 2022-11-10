@@ -153,9 +153,7 @@ void RTRLocalPlanner::amclCallback(
   updateError();
 
   if (amcl_started) {
-    currentPos.distance += std::sqrt(
-        (currentPos.x - previousPos.x) * (currentPos.x - previousPos.x) +
-        (currentPos.y - previousPos.y) * (currentPos.y - previousPos.y));
+    currentPos.distance += euclideanDistance(currentPos, previousPos);
   }
 
   amcl_started = 1;
@@ -181,27 +179,33 @@ void RTRLocalPlanner::updateGoal() {
   path_pub.publish(goalPose);
 }
 
-void RTRLocalPlanner::updateError() {
+pos RTRLocalPlanner::getError(pos goalPos, pos currentPos) {
 
   double yaw;
+  pos error;
+  error.x = (goalPos.x - currentPos.x);
+  error.y = (goalPos.y - currentPos.y);
 
-  goalError.x = (goalPos.x - currentPos.x);
-  goalError.y = (goalPos.y - currentPos.y);
-
-  if (goalError.y == 0 && goalError.x == 0) {
+  if (error.y == 0 && error.x == 0) {
     yaw = currentPos.yaw;
   } else {
-    yaw = std::atan2(goalError.y, goalError.x);
+    yaw = std::atan2(error.y, error.x);
   }
 
-  goalError.distance =
-      std::sqrt(goalError.x * goalError.x + goalError.y * goalError.y);
-  goalError.yaw = yaw - currentPos.yaw;
+  error.distance = std::sqrt(error.x * error.x + error.y * error.y);
+  error.yaw = yaw - currentPos.yaw;
+
+  error.yaw = directionalYaw(error.yaw);
+
+  return error;
+}
+
+void RTRLocalPlanner::updateError() {
+
+  goalError = getError(goalPos, currentPos);
 
   ROS_INFO("Distance to goal:%f", goalError.distance);
   ROS_INFO("Yaw to Goal:%f", goalError.yaw);
-
-  goalError.yaw = directionalYaw(goalError.yaw);
 }
 
 double RTRLocalPlanner::directionalYaw(double yaw) {
@@ -212,6 +216,13 @@ double RTRLocalPlanner::directionalYaw(double yaw) {
     yaw += RAD(360);
   }
   return yaw;
+}
+
+double RTRLocalPlanner::euclideanDistance(pos target, pos current) {
+  pos error;
+  error.x = target.x - current.x;
+  error.y = target.y - current.y;
+  return std::sqrt(error.x * error.x + error.y * error.y);
 }
 
 } // namespace rtr_local_planner
