@@ -75,6 +75,7 @@ catkin_make run_tests
 
 ## Results
 ![Output](resources/out.gif)
+>***Use the rviz param file in the rviz folder to load the same settings as seen in the image.***
 
 ## RQT Graph
 ![rosgraph](resources/rosgraph.png)
