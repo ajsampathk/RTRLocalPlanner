@@ -52,7 +52,7 @@ This should allow the RTRLocalPlanner to be initialized when move_base in launch
 
 
 ## Results
-![Output](out.gif)
+![Output](resources/out.gif)
 
 ## RQT Graph
-![rosgraph](rosgraph.png)
+![rosgraph](resources/rosgraph.png)
